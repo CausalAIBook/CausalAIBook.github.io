@@ -1,1 +1,1 @@
-Deployed at https://frederikbornemann.github.io/causalmlbooktest.github.io/
+Website for the Causal AI Book.
