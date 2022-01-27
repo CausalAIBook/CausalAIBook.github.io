@@ -1,0 +1,44 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+
+      - name: Install packages
+        run: npm ci
+
+      - name: Build next.js app
+        run: npm run build
+        env:
+          NEXT_PUBLIC_BASE_PATH: "/causalmlbooktest.github.io"
+
+      - name: Export next.js app
+        run: npm run export
+        env:
+          NEXT_PUBLIC_BASE_PATH: "/causalmlbooktest.github.io"
+
+      - run: touch ./out/.nojekyll
+
+      - name: Deploy pages
+        uses: JamesIves/github-pages-deploy-action@4.2.0
+        with:
+          branch: gh-pages # The branch the action should deploy to.
+          folder: out # The folder the action should deploy.
